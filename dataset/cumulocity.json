@@ -1,0 +1,48 @@
+{
+	"name": "cumulocity",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CumulocityREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"source": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "/measurement/measurements"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "2000"
+			},
+			"withTotalPages": {
+				"type": "string",
+				"defaultValue": "true"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "MyWindowStart"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "MyWindowEnd"
+			}
+		},
+		"folder": {
+			"name": "cumulocityAuto"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat(dataset().relativeURL,'?pageSize=',dataset().pageSize,'&withTotalPages=',dataset().withTotalPages,'&source=',dataset().source,'&dateFrom=',dataset().MyWindowStart,'&dateTo=',dataset().MyWindowEnd)",
+				"type": "Expression"
+			},
+			"requestMethod": "GET"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

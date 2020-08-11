@@ -1,0 +1,17 @@
+{
+	"name": "PROD_COMPONENT_PROPERTY_LIMIT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_prod",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "COMPONENT_PROPERTY_LIMIT_DEV"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

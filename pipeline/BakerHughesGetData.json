@@ -1,0 +1,142 @@
+{
+	"name": "BakerHughesGetData",
+	"properties": {
+		"activities": [
+			{
+				"name": "BHUserSecret",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://kv-loops-dev.vault.azure.net/secrets/BakerHughesAPIAuthSecret/db56e7c7b38c4c1bbb7ec5ec7a2626b7?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Authenticate",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "BHUserSecret",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://vitalyx.auth.us-west-2.amazoncognito.com/oauth2/token",
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@concat('Basic ',activity('BHUserSecret').output.value)",
+							"type": "Expression"
+						},
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": "grant_type=client_credentials"
+				}
+			},
+			{
+				"name": "BakerHughes",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Authenticate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "BakerHughes",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"SOURCE_COMPONENT_ID": "86",
+						"SOURCE_TYPE_NAME": "BH PO",
+						"COMPONENT_ID": "901000000001",
+						"CUSTOMER_ID": "901000000000",
+						"SECTOR_NAME": "Marine",
+						"CUSTOMER_NAME": "PO",
+						"SOURCE_API_ID": "1",
+						"applicationToken": {
+							"value": "@activity('Authenticate').output.access_token",
+							"type": "Expression"
+						},
+						"MyWindowInitialStart": "2020-05-14 00:00:00"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"SOURCE_COMPONENT_ID": {
+				"type": "string",
+				"defaultValue": "86"
+			},
+			"SECTOR_NAME": {
+				"type": "string",
+				"defaultValue": "Marine"
+			},
+			"CUSTOMER_ID": {
+				"type": "string",
+				"defaultValue": "901000000000"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "company/"
+			},
+			"withTotalPages": {
+				"type": "string",
+				"defaultValue": "true"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"COMPONENT_ID": {
+				"type": "string",
+				"defaultValue": "901000000001"
+			},
+			"MyWindowInitialStart": {
+				"type": "string",
+				"defaultValue": "2020-05-14 00:00:00"
+			},
+			"CUSTOMER_NAME": {
+				"type": "string",
+				"defaultValue": "PO"
+			},
+			"SOURCE_API_ID": {
+				"type": "string",
+				"defaultValue": "1"
+			}
+		},
+		"folder": {
+			"name": "BakerHughes"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-07-24T16:29:57Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

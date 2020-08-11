@@ -1,0 +1,97 @@
+{
+	"name": "update_sql",
+	"properties": {
+		"activities": [
+			{
+				"name": "OptimizeDeltaTable",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/exit_test1"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "updateSQLRec",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "OptimizeDeltaTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[updateSpotOilChange]",
+					"storedProcedureParameters": {
+						"CUSTOMER_ID": {
+							"value": {
+								"value": "@activity('OptimizeDeltaTable').output.runOutput[0]",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"COMPONENT_ID": {
+							"value": {
+								"value": "@activity('OptimizeDeltaTable').output.runOutput[1]",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"OilCondM": {
+							"value": {
+								"value": "@activity('OptimizeDeltaTable').output.runOutput[2]",
+								"type": "Expression"
+							},
+							"type": "Double"
+						},
+						"PROPERTY_NAME": {
+							"value": {
+								"value": "@activity('OptimizeDeltaTable').output.runOutput[3]",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"SPOT_OIL_CHANGE": {
+							"value": {
+								"value": "@activity('OptimizeDeltaTable').output.runOutput[4]",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loopsSQLbackend",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Ortadogu"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-02-17T15:43:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

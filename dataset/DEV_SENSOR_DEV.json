@@ -1,0 +1,17 @@
+{
+	"name": "DEV_SENSOR_DEV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_prod",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "SENSOR_DEV"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

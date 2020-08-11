@@ -1,0 +1,208 @@
+{
+	"name": "15849_CustomerLevelModular",
+	"properties": {
+		"activities": [
+			{
+				"name": "authenticate",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "POST",
+							"additionalHeaders": {
+								"value": "@{concat('Comap-Key: ',pipeline().parameters.ComapKey,'\nContent-Type: application/x-www-form-urlencoded')}",
+								"type": "Expression"
+							},
+							"requestBody": {
+								"value": "@{concat(pipeline().parameters.authRequestBody1,pipeline().parameters.username,pipeline().parameters.authRequestBody2,pipeline().parameters.password,pipeline().parameters.authRequestBody3)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "ComApAuthenticateUser",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeURL": {
+								"value": "@pipeline().parameters.relativeURLauth",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "getCustomerMetadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT *\nFROM [master_tables].[SOURCE]\nWHERE CUSTOMER_ID =', pipeline().parameters.cId)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SQL_LOOPS_COMPONENT",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "authenticate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "getCustomerMetadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('getCustomerMetadata').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "GeneralComAp",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "GeneralComAp",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"sourceValueGuid": {
+										"value": "@item().SOURCE_COMPONENT_ID",
+										"type": "Expression"
+									},
+									"sectorName": {
+										"value": "@item().SECTOR_NAME",
+										"type": "Expression"
+									},
+									"cId": {
+										"value": "@pipeline().parameters.cId",
+										"type": "Expression"
+									},
+									"componentId": {
+										"value": "@item().COMPONENT_ID",
+										"type": "Expression"
+									},
+									"MyWindowInitialStart": {
+										"value": "@pipeline().parameters.MyWindowInitialStart",
+										"type": "Expression"
+									},
+									"customerName": {
+										"value": "@item().CUSTOMER_NAME",
+										"type": "Expression"
+									},
+									"applicationToken": {
+										"value": "@activity('authenticate').output.firstRow.applicationToken",
+										"type": "Expression"
+									},
+									"comApKey": {
+										"value": "@pipeline().parameters.ComapKey",
+										"type": "Expression"
+									},
+									"sourceUnitGuid": {
+										"value": "@item().SOURCE_API_ID",
+										"type": "Expression"
+									},
+									"sourceType": {
+										"value": "@item().SOURCE_TYPE_NAME",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"username": {
+				"type": "string",
+				"defaultValue": "mark.raynes@shell.com"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "CHAngeMe638541"
+			},
+			"ComapKey": {
+				"type": "string",
+				"defaultValue": "154fa81ecff441d88b99c6bd08598890"
+			},
+			"relativeURLauth": {
+				"type": "string",
+				"defaultValue": "authenticate"
+			},
+			"relativeURLunits": {
+				"type": "string",
+				"defaultValue": "units"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "15849"
+			},
+			"MyWindowInitialStart": {
+				"type": "string",
+				"defaultValue": "2020-03-02T00:00:00Z"
+			},
+			"authRequestBody1": {
+				"type": "string",
+				"defaultValue": "{\"username\":\""
+			},
+			"authRequestBody2": {
+				"type": "string",
+				"defaultValue": "\",\"password\":\""
+			},
+			"authRequestBody3": {
+				"type": "string",
+				"defaultValue": "\" }"
+			}
+		},
+		"folder": {
+			"name": "TESTs"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-02-28T12:08:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

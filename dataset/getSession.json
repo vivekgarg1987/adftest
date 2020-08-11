@@ -1,0 +1,38 @@
+{
+	"name": "getSession",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ORG": {
+				"type": "string",
+				"defaultValue": "FE4 Demo Devices"
+			},
+			"USERID": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"PASSWD": {
+				"type": "string",
+				"defaultValue": "TEST"
+			}
+		},
+		"folder": {
+			"name": "OrbcommDeviceCloud"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat('sensornet/RestfullServices/AuthService/getSession?ORG=',dataset().ORG,'&PASSWD=',dataset().PASSWD,'&USERID=',dataset().USERID)",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

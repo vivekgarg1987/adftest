@@ -1,0 +1,6 @@
+{
+	"name": "integrationRuntime2Warmer",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

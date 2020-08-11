@@ -1,0 +1,17 @@
+{
+	"name": "Warmer_60_minutes_prod",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2020-03-31T16:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

@@ -1,0 +1,69 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "loopsSQLbackend",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "cumulocityAuto"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "LOAD_NUM",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "START_TIME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "WRITE_TIME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "JOB_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "JOB_STATUS",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FILE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "COMPONENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SENSOR_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SECTOR_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "JOB_ID",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ctrl_cumulocity_log"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

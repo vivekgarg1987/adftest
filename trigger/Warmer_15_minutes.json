@@ -1,0 +1,17 @@
+{
+	"name": "Warmer_15_minutes",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 60,
+				"startTime": "2020-03-12T09:15:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

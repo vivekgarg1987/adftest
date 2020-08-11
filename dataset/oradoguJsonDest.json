@@ -1,0 +1,18 @@
+{
+	"name": "oradoguJsonDest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStoreGen1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"folderPath": "landingZone/Amol/raw_data_master_40/Orata-30"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

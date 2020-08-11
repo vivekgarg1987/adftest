@@ -1,0 +1,99 @@
+{
+	"name": "DEV_SENSOR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DEV-SQL-Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SENSOR_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "COMPONENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SENSOR_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SENSOR_DESCRIPTION",
+				"type": "nvarchar"
+			},
+			{
+				"name": "UNIT_OF MEASURE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SENSOR_TYPE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ACTIVE_INDICATOR",
+				"type": "bit"
+			},
+			{
+				"name": "PAUSE_INGEST_INDICATOR",
+				"type": "bit"
+			},
+			{
+				"name": "PLACEHOLDER_ATTRIBUTE_1",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "PLACEHOLDER_ATTRIBUTE_2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PLACEHOLDER_ATTRIBUTE_3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PLACEHOLDER_ATTRIBUTE_4",
+				"type": "nvarchar"
+			},
+			{
+				"name": "EFFECTIVE_FROM_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "INTERVAL_DURATION",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "CONVERSION_FACTOR",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "SENSOR"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

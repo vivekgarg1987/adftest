@@ -1,0 +1,30 @@
+{
+	"name": "ABSApAuthenticateUser",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ABServices",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "TEST"
+			}
+		},
+		"folder": {
+			"name": "ABServices"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().relativeURL",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

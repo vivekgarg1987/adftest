@@ -1,0 +1,741 @@
+{
+	"name": "Warmeversorgungsollstedt_149_Backup",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEachWarmerTable",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "DP_NAME_LOOKUP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('DP_NAME_LOOKUP').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "warmerTableCopy",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderStoredProcedureName": "[dbo].[sp_getDPValues]",
+									"storedProcedureParameters": {
+										"Datetime_End": {
+											"type": "DateTime",
+											"value": {
+												"value": "@utcnow()",
+												"type": "Expression"
+											}
+										},
+										"Datetime_Start": {
+											"type": "DateTime",
+											"value": {
+												"value": "@activity('Lookup1').output.firstRow.lastTimestamp",
+												"type": "Expression"
+											}
+										},
+										"DP_NAME": {
+											"type": "String",
+											"value": {
+												"value": "@item().DP_NAME",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureDataLakeStoreWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".csv"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SqlServerTable1",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "WriteCSV",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "DP_NAME_LOOKUP",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "log_ingest_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "WarmerTableList_149",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "log_ingest_complete",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ForEachWarmerTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[logWarmerStatus]",
+					"storedProcedureParameters": {
+						"COMPONENT_ID": {
+							"value": "1528693",
+							"type": "Int64"
+						},
+						"CUSTOMER_ID": {
+							"value": "4012",
+							"type": "Int64"
+						},
+						"CUSTOMER_NAME": {
+							"value": "Warmeversorgungsollstedt",
+							"type": "String"
+						},
+						"ERROR_MESSAGE_TEXT": {
+							"value": null,
+							"type": "String"
+						},
+						"ERROR_TYPE_NAME": {
+							"value": null,
+							"type": "String"
+						},
+						"FILE_NAME": {
+							"value": null,
+							"type": "String"
+						},
+						"JOB_NAME": {
+							"value": "warmer_ingest_csv",
+							"type": "String"
+						},
+						"JOB_STATUS": {
+							"value": "COMPLETED",
+							"type": "String"
+						},
+						"LAST_PROCESSED_RECORD_DATE_TIME": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"MAX_RUNNING_HOURS_DURATION": {
+							"value": null,
+							"type": "Single"
+						},
+						"RECORD_COUNT": {
+							"value": null,
+							"type": "Int64"
+						},
+						"SECTOR_NAME": {
+							"value": "Power",
+							"type": "String"
+						},
+						"SOURCE_COMPONENT_ID": {
+							"value": null,
+							"type": "String"
+						},
+						"START_TIME": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TOP_UP_SECONDS_DURATION": {
+							"value": null,
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loopsSQLbackend",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "log_ingest_start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[readLastTimestamp]",
+						"storedProcedureParameters": {
+							"COMPONENT_ID": {
+								"type": "Int64",
+								"value": "1528693"
+							},
+							"JOB_NAME": {
+								"type": "String",
+								"value": "warmer_ingest_csv"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "loopsSQLloadManagement",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "log_ingest_start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[logWarmerStatus]",
+					"storedProcedureParameters": {
+						"COMPONENT_ID": {
+							"value": "1528693",
+							"type": "Int64"
+						},
+						"CUSTOMER_ID": {
+							"value": "4012",
+							"type": "Int64"
+						},
+						"CUSTOMER_NAME": {
+							"value": "Warmeversorgungsollstedt",
+							"type": "String"
+						},
+						"ERROR_MESSAGE_TEXT": {
+							"value": null,
+							"type": "String"
+						},
+						"ERROR_TYPE_NAME": {
+							"value": null,
+							"type": "String"
+						},
+						"FILE_NAME": {
+							"value": null,
+							"type": "String"
+						},
+						"JOB_NAME": {
+							"value": "warmer_ingest_csv",
+							"type": "String"
+						},
+						"JOB_STATUS": {
+							"value": "STARTED",
+							"type": "String"
+						},
+						"LAST_PROCESSED_RECORD_DATE_TIME": {
+							"value": null,
+							"type": "DateTime"
+						},
+						"MAX_RUNNING_HOURS_DURATION": {
+							"value": null,
+							"type": "Single"
+						},
+						"RECORD_COUNT": {
+							"value": null,
+							"type": "Int64"
+						},
+						"SECTOR_NAME": {
+							"value": "Power",
+							"type": "String"
+						},
+						"SOURCE_COMPONENT_ID": {
+							"value": null,
+							"type": "String"
+						},
+						"START_TIME": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TOP_UP_SECONDS_DURATION": {
+							"value": null,
+							"type": "Int64"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loopsSQLbackend",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "warmer_landing_to_raw",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "log_ingest_complete",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/Warmer/warmeversorgungsollstedt_landing2raw",
+					"baseParameters": {
+						"customer_id": {
+							"value": "@pipeline().parameters.customer_id",
+							"type": "Expression"
+						},
+						"customer_name": {
+							"value": "@pipeline().parameters.customer_name",
+							"type": "Expression"
+						},
+						"inputPath": {
+							"value": "@pipeline().parameters.inputPath",
+							"type": "Expression"
+						},
+						"db_jdbcHostname": {
+							"value": "@pipeline().parameters.db_jdbcHostname",
+							"type": "Expression"
+						},
+						"db_jdbcDatabase": {
+							"value": "@pipeline().parameters.db_jdbcDatabase",
+							"type": "Expression"
+						},
+						"db_jdbcPort": {
+							"value": "@pipeline().parameters.db_jdbcPort",
+							"type": "Expression"
+						},
+						"ctrl_log_table_name": {
+							"value": "@pipeline().parameters.ctrl_log_table_name",
+							"type": "Expression"
+						},
+						"ctrl_load_table_name": {
+							"value": "@pipeline().parameters.ctrl_load_table_name",
+							"type": "Expression"
+						},
+						"sector_name": {
+							"value": "@pipeline().parameters.sector_name",
+							"type": "Expression"
+						},
+						"component_id": {
+							"value": "@pipeline().parameters.component_id",
+							"type": "Expression"
+						},
+						"kv_scope_name": {
+							"value": "@pipeline().parameters.kv_scope_name",
+							"type": "Expression"
+						},
+						"db_username_key": {
+							"value": "@pipeline().parameters.db_username_key",
+							"type": "Expression"
+						},
+						"db_password_key": {
+							"value": "@pipeline().parameters.db_password_key",
+							"type": "Expression"
+						},
+						"adls_base_dir": {
+							"value": "@pipeline().parameters.adls_base_dir",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "oil_condition",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "warmer_landing_to_raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/Warmer/job_oil_condition_v2"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Copy_latest",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "oil_condition",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": {
+								"value": ".csv",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "WriteCSV",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "WriteCSV_arc",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Clear_latest_folder",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy_latest",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Files4Streaming",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "WriteCSV",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeStoreGen1",
+							"type": "LinkedServiceReference"
+						},
+						"path": "landingZone/Power/Sensitive/TRN/4012/Logging"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureDataLakeStoreReadSettings",
+						"recursive": true
+					}
+				}
+			},
+			{
+				"name": "Files4Streaming",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "oil_condition",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "WriteCSV",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "WriteCSV_streaming",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"customer_id": {
+				"type": "string",
+				"defaultValue": "4012"
+			},
+			"customer_name": {
+				"type": "string",
+				"defaultValue": "warmeversorgungsollstedt"
+			},
+			"inputPath": {
+				"type": "string",
+				"defaultValue": "landingZone/Power/Sensitive/TRN/"
+			},
+			"db_jdbcHostname": {
+				"type": "string",
+				"defaultValue": "sqlsv-loops-dev.database.windows.net"
+			},
+			"db_jdbcDatabase": {
+				"type": "string",
+				"defaultValue": "sqldb-loops-dev"
+			},
+			"db_jdbcPort": {
+				"type": "string",
+				"defaultValue": "1433"
+			},
+			"ctrl_log_table_name": {
+				"type": "string",
+				"defaultValue": "ctrl_log_message"
+			},
+			"ctrl_load_table_name": {
+				"type": "string",
+				"defaultValue": "ctrl_load_management"
+			},
+			"sector_name": {
+				"type": "string",
+				"defaultValue": "Power"
+			},
+			"component_id": {
+				"type": "string",
+				"defaultValue": "1528693"
+			},
+			"kv_scope_name": {
+				"type": "string",
+				"defaultValue": "kv-loops-dev-scope"
+			},
+			"db_username_key": {
+				"type": "string",
+				"defaultValue": "sqlAdministratorLogin"
+			},
+			"db_password_key": {
+				"type": "string",
+				"defaultValue": "sqlAdministratorLoginPassword"
+			},
+			"adls_base_dir": {
+				"type": "string",
+				"defaultValue": "dbfs:/mnt/datalake/"
+			},
+			"sensor_type_name": {
+				"type": "string",
+				"defaultValue": "Loss_Factor"
+			},
+			"lubricant_limit_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.COMPONENT_PROPERTY_LIMIT"
+			},
+			"sensor_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.SENSOR"
+			},
+			"component_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.LOOPS_COMPONENT"
+			},
+			"cosmos_endpoint": {
+				"type": "string",
+				"defaultValue": "https://cosdb-loops-dev.documents.azure.com:443/"
+			},
+			"cosmos_primary_key": {
+				"type": "string",
+				"defaultValue": "cosmosPrimaryKey"
+			},
+			"oc_cosmos_database": {
+				"type": "string",
+				"defaultValue": "metricDataDB"
+			},
+			"oc_cosmos_collection": {
+				"type": "string",
+				"defaultValue": "M000003"
+			},
+			"oc_property_type_name": {
+				"type": "string",
+				"defaultValue": "OilCondition"
+			},
+			"delta_table_name": {
+				"type": "string",
+				"defaultValue": "warmeversorgungsollstedt_oil_raw"
+			}
+		},
+		"folder": {
+			"name": "Warmeversorgungsollstedt"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-07-30T13:05:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

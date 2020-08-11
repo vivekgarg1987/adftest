@@ -1,0 +1,17 @@
+{
+	"name": "PROD_RECOMMENDATION_STATE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_prod",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "RECOMMENDATION_STATE_DEV"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

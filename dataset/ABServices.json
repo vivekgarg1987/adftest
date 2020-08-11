@@ -1,0 +1,51 @@
+{
+	"name": "ABServices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ABServicesREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"source": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "wcra/shell/v1/get_all"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "2000"
+			},
+			"withTotalPages": {
+				"type": "string",
+				"defaultValue": "true"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "MyWindowStart"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "MyWindowEnd"
+			}
+		},
+		"folder": {
+			"name": "ABServices"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat(dataset().relativeURL,'?startDate=',dataset().MyWindowStart,'&endDate=',dataset().MyWindowEnd,'&engine=',dataset().source)",
+				"type": "Expression"
+			},
+			"requestMethod": "GET",
+			"additionalHeaders": {
+				"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd3d3LnUtcHJqLml0IiwiaWF0IjoxNTk0Mjg0NjMwLCJuYmYiOjE1OTQyODQ2MzAsImV4cCI6MTU5NDg4OTQzMCwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMTUifX19.aWsrCpSC3erACP2vt7jkM1Hik3ctreT5voHC6E17nXo"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

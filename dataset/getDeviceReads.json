@@ -1,0 +1,71 @@
+{
+	"name": "getDeviceReads",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "orbcommREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"RequestHeaderAccept": {
+				"type": "string",
+				"defaultValue": "application/json"
+			},
+			"RequestHeaderContent": {
+				"type": "string",
+				"defaultValue": "application/json"
+			},
+			"sessionId": {
+				"type": "string"
+			},
+			"readId": {
+				"type": "string",
+				"defaultValue": "Pipeline level (pagination)"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "Pipeline level"
+			},
+			"gmtTime": {
+				"type": "string",
+				"defaultValue": "Pipeline level (dynamic)"
+			},
+			"endGmtTime": {
+				"type": "string",
+				"defaultValue": "Pipeline level (dynamic)"
+			},
+			"apiConfigurationName": {
+				"type": "string",
+				"defaultValue": "Pipeline level (setup in orbcomm cloud)"
+			}
+		},
+		"folder": {
+			"name": "OrbcommDeviceCloud"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('sensornet/RestfullServices/dataExportSvc/dataExportSvc/getDeviceReads?sessionId=',dataset().sessionId,'&readId=',dataset().readId,'&pageSize=',dataset().pageSize,'&gmtTime=',dataset().gmtTime,'&endGmtTime=',dataset().endGmtTime,'&apiConfigurationName=',dataset().apiConfigurationName)",
+				"type": "Expression"
+			},
+			"requestMethod": "GET",
+			"additionalHeaders": {
+				"Accept": {
+					"value": "@dataset().RequestHeaderAccept",
+					"type": "Expression"
+				},
+				"Content-Type": {
+					"value": "@dataset().RequestHeaderContent",
+					"type": "Expression"
+				}
+			},
+			"paginationRules": {
+				"QueryParameters['readId']": {
+					"value": "$.nextReadId",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

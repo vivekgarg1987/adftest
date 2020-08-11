@@ -1,0 +1,60 @@
+{
+	"name": "pre_process_kghm_oil_condition",
+	"properties": {
+		"activities": [
+			{
+				"name": "Oil Condition Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Oil KGHM File Ingest Notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Mining/KGHM/job_oil_condition_kghm"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Oil KGHM File Ingest Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Mining/KGHM/job_oil_kghm_json"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "KGHM_OC"
+		},
+		"annotations": [],
+		"lastPublishTime": "2019-12-05T20:00:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

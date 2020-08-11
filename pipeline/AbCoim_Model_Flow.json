@@ -1,0 +1,342 @@
+{
+	"name": "AbCoim_Model_Flow",
+	"properties": {
+		"activities": [
+			{
+				"name": "Spot_Oil_Change",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "job_landing_json_2_raw_delta_ABC",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Spot_Oil_Change"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Prepped_Data_Feature_Engg",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Spot_Oil_Change",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Prepped_Data_Feature_Engg"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Predict_Oxidation",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Prepped_Data_Feature_Engg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Predict_Oxidation"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ROL_For_Oxidation",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Predict_Oxidation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/ROL_For_Oxidation"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Predict_TBN",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Prepped_Data_Feature_Engg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Predict_TBN"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ROL_For_TBN",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Predict_TBN",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/ROL_For_TBN"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Predict_Viscosity",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Prepped_Data_Feature_Engg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Predict_Viscosity"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ROL_For_viscosity",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Predict_Viscosity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/ROL_For_Viscosity"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "job_landing_json_2_raw_delta_ABC",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/job_ems_abc_csv"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "calculate_min_ROL",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "ROL_For_Oxidation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ROL_For_TBN",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ROL_For_viscosity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/calculate_min_ROL"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Predict_TAN",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Prepped_Data_Feature_Engg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Predict_TAN"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Calculate_Viscosity_Recommendation",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Predict_Viscosity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/ABC/Calculate_Viscosity_Recommendation"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "ABCoim"
+		},
+		"annotations": [],
+		"lastPublishTime": "2019-12-05T20:00:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

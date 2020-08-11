@@ -1,0 +1,88 @@
+{
+	"name": "LA_Data",
+	"properties": {
+		"activities": [
+			{
+				"name": "CA_CUSTOMER_HIERARCHY",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/LAData/LA_functions_v3_1",
+					"baseParameters": {
+						"source_table_name": "master_tables.CA_CUSTOMER_HIERARCHY",
+						"part_col": "CUSTOMERID",
+						"part_col_4raw": "CUSTOMER_ID"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "CA_LUBRICANT",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/LAData/LA_functions_v3_1",
+					"baseParameters": {
+						"source_table_name": "master_tables.CA_LUBRICANT",
+						"part_col": "LUBRCT_MFTR_ID",
+						"part_col_4raw": "LUBRICANT_MANUFACTURER_ID"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "CA_SAMPLE_TEST_RESULTS_FACTS",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/LAData/LA_functions_v3_1",
+					"baseParameters": {
+						"source_table_name": "master_tables.CA_SAMPLE_TEST_RESULTS_FACTS",
+						"part_col": "CUSTOMERID",
+						"part_col_4raw": "CUSTOMER_ID"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "LA_Data"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-02-11T13:46:52Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

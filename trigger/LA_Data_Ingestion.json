@@ -1,0 +1,25 @@
+{
+	"name": "LA_Data_Ingestion",
+	"properties": {
+		"description": "Ingest LS data from source location",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "LA_Data",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2019-11-04T00:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

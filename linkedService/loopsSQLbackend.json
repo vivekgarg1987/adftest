@@ -1,0 +1,29 @@
+{
+	"name": "loopsSQLbackend",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"SQLDBURL": {
+				"type": "String",
+				"defaultValue": "sqlsv-loops-dev.database.windows.net"
+			},
+			"SQLDBNAME": {
+				"type": "String",
+				"defaultValue": "sqldb-loops-dev"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().SQLDBURL};Initial Catalog=@{linkedService().SQLDBNAME};User ID=loopsadmin;server=tcp:sqlsv-loops-dev.database.windows.net,1433;persist security info=False;multipleactiveresultsets=False;trustservercertificate=False",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "kv_loops_dev",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "sqlAdministratorLoginPassword"
+			}
+		}
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"name": "BakerHughesAuthREST",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://vitalyx.auth.us-west-2.amazoncognito.com/oauth2/token",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

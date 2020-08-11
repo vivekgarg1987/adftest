@@ -1,0 +1,33 @@
+{
+	"name": "run_ABCoim_Pipeline",
+	"properties": {
+		"description": "this pipeline will :\n1 read csv file from landing zone, \n2 load it into Raw, \n3. spot oil change\n4. feature engg\n5. Apply various models\n",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "AbCoim_Model_Flow",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2019-10-05T05:00:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						45
+					],
+					"hours": [
+						8
+					]
+				}
+			}
+		}
+	}
+}

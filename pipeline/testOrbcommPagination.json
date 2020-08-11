@@ -1,0 +1,194 @@
+{
+	"name": "testOrbcommPagination",
+	"properties": {
+		"activities": [
+			{
+				"name": "getSession",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "POST",
+							"additionalHeaders": "Accept: application/json\nContent-Type: application/x-www-form-urlencoded",
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "getSession",
+						"type": "DatasetReference",
+						"parameters": {
+							"ORG": {
+								"value": "@pipeline().parameters.ORG",
+								"type": "Expression"
+							},
+							"USERID": {
+								"value": "@pipeline().parameters.USERID",
+								"type": "Expression"
+							},
+							"PASSWD": {
+								"value": "@pipeline().parameters.PASSWD",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "getDeviceReads",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "getSession",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:05:00",
+						"requestInterval": "00.00:00:00.010"
+					},
+					"sink": {
+						"type": "AzureDataLakeStoreSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "getDeviceReads",
+						"type": "DatasetReference",
+						"parameters": {
+							"RequestHeaderAccept": "application/json",
+							"RequestHeaderContent": "application/json",
+							"sessionId": {
+								"value": "@activity('getSession').output.firstRow.Response.Data.SessionID",
+								"type": "Expression"
+							},
+							"readId": "1",
+							"pageSize": "1000",
+							"gmtTime": {
+								"value": "@pipeline().parameters.MyWindowStart",
+								"type": "Expression"
+							},
+							"endGmtTime": {
+								"value": "@pipeline().parameters.MyWindowEnd",
+								"type": "Expression"
+							},
+							"apiConfigurationName": "TestRemoteSense"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureDataLakecomAp",
+						"type": "DatasetReference",
+						"parameters": {
+							"componentId": "TEST",
+							"MyWindowStart": {
+								"value": "@pipeline().parameters.MyWindowStart",
+								"type": "Expression"
+							},
+							"MyWindowEnd": {
+								"value": "@pipeline().parameters.MyWindowEnd",
+								"type": "Expression"
+							},
+							"cId": "TEST",
+							"sectorName": "TEST",
+							"sourceType": "TEST"
+						}
+					}
+				]
+			},
+			{
+				"name": "closeSession",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "getDeviceReads",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "POST",
+							"additionalHeaders": "Content-Type: application/x-www-form-urlencoded",
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "closeSession",
+						"type": "DatasetReference",
+						"parameters": {
+							"sessionId": {
+								"value": "@activity('getSession').output.firstRow.Response.Data.SessionID",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"ORG": {
+				"type": "string",
+				"defaultValue": "FE4 Demo Devices"
+			},
+			"USERID": {
+				"type": "string",
+				"defaultValue": "rjanorious"
+			},
+			"PASSWD": {
+				"type": "string",
+				"defaultValue": "abc@1234"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "2020-02-27T00:00:00Z"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "2020-02-28T00:00:00Z"
+			}
+		},
+		"folder": {
+			"name": "Orbcomm"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-03-10T16:12:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,33 @@
+{
+	"name": "update_sql1_copy2",
+	"properties": {
+		"activities": [
+			{
+				"name": "OptimizeDeltaTable",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/exit_test2"
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Ortadogu"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-03-05T16:15:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

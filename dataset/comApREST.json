@@ -1,0 +1,52 @@
+{
+	"name": "comApREST",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "comApREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ComapKey": {
+				"type": "string",
+				"defaultValue": "Pipeline level"
+			},
+			"applicationToken": {
+				"type": "string",
+				"defaultValue": "Pipeline level"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "Pipeline level"
+			}
+		},
+		"folder": {
+			"name": "comAp"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().relativeURL",
+				"type": "Expression"
+			},
+			"requestMethod": "GET",
+			"additionalHeaders": {
+				"Comap-Key": {
+					"value": "@dataset().ComapKey",
+					"type": "Expression"
+				},
+				"Token": {
+					"value": "@dataset().applicationToken",
+					"type": "Expression"
+				}
+			},
+			"paginationRules": {
+				"QueryParameters.request_query_parameter": {
+					"value": "$.nextOffset",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

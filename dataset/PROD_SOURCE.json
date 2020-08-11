@@ -1,0 +1,17 @@
+{
+	"name": "PROD_SOURCE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_prod",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "SOURCE_DEV"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

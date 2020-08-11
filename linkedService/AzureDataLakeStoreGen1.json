@@ -1,0 +1,14 @@
+{
+	"name": "AzureDataLakeStoreGen1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDataLakeStore",
+		"typeProperties": {
+			"dataLakeStoreUri": "https://dlsloopsdev.azuredatalakestore.net/webhdfs/v1",
+			"tenant": "c7c788ae-f969-42dc-8d60-9f93bf7284a5",
+			"subscriptionId": "ae1cfcb2-2928-405d-afd3-743efe4dddd8",
+			"resourceGroupName": "TAH-DEV01-LOOPS-RGP-INFRA"
+		}
+	}
+}

@@ -1,0 +1,1547 @@
+{
+	"name": "Ortadogu_OC_Multi_Threaded",
+	"properties": {
+		"activities": [
+			{
+				"name": "ComponentLookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT COMPONENT_ID\nFROM [master_tables].[LOOPS_COMPONENT]\nWHERE CUSTOMER_ID =', pipeline().parameters.customer_id)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SQL_LOOPS_COMPONENT",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "InterateForEachComponent",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "ComponentLookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('ComponentLookup').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 2,
+					"activities": [
+						{
+							"name": "OilSensorFileIngest",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_oil_Ortadogu_json",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									},
+									"cosmos_endpoint": {
+										"value": "@pipeline().parameters.cosmos_endpoint",
+										"type": "Expression"
+									},
+									"cosmos_primary_key": {
+										"value": "@pipeline().parameters.cosmos_primary_key",
+										"type": "Expression"
+									},
+									"oc_cosmos_database": {
+										"value": "@pipeline().parameters.oc_cosmos_database",
+										"type": "Expression"
+									},
+									"oc_cosmos_collection": {
+										"value": "@pipeline().parameters.oc_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_tab_name": {
+										"value": "@pipeline().parameters.recomm_tab_name",
+										"type": "Expression"
+									},
+									"severity_property_tab_name": {
+										"value": "@pipeline().parameters.severity_property_tab_name",
+										"type": "Expression"
+									},
+									"recomm_cosmos_database": {
+										"value": "@pipeline().parameters.recomm_cosmos_database",
+										"type": "Expression"
+									},
+									"recomm_cosmos_collection": {
+										"value": "@pipeline().parameters.recomm_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_first_run": {
+										"value": "@pipeline().parameters.recomm_first_run",
+										"type": "Expression"
+									},
+									"recomm_ALERT_ON_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_ALERT_OFF_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_src_date_col_name": {
+										"value": "@pipeline().parameters.recomm_src_date_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_component_col_name": {
+										"value": "@pipeline().parameters.recomm_src_component_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_measurement_col_name": {
+										"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+										"type": "Expression"
+									},
+									"recomm_property_name": {
+										"value": "@pipeline().parameters.recomm_property_name",
+										"type": "Expression"
+									},
+									"recomm_flush_rec_count": {
+										"value": "@pipeline().parameters.recomm_flush_rec_count",
+										"type": "Expression"
+									},
+									"site_id": {
+										"value": "@pipeline().parameters.site_id",
+										"type": "Expression"
+									},
+									"asset_id": {
+										"value": "@pipeline().parameters.asset_id",
+										"type": "Expression"
+									},
+									"oc_property_type_name": {
+										"value": "@pipeline().parameters.oc_property_type_name",
+										"type": "Expression"
+									},
+									"utc_offset": {
+										"value": "@pipeline().parameters.utc_offset",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "OilCondition",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "OilSensorFileIngest",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_oil_condition_Ortadogu_v3",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									},
+									"cosmos_endpoint": {
+										"value": "@pipeline().parameters.cosmos_endpoint",
+										"type": "Expression"
+									},
+									"cosmos_primary_key": {
+										"value": "@pipeline().parameters.cosmos_primary_key",
+										"type": "Expression"
+									},
+									"oc_cosmos_database": {
+										"value": "@pipeline().parameters.oc_cosmos_database",
+										"type": "Expression"
+									},
+									"oc_cosmos_collection": {
+										"value": "@pipeline().parameters.oc_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_tab_name": {
+										"value": "@pipeline().parameters.recomm_tab_name",
+										"type": "Expression"
+									},
+									"severity_property_tab_name": {
+										"value": "@pipeline().parameters.severity_property_tab_name",
+										"type": "Expression"
+									},
+									"recomm_cosmos_database": {
+										"value": "@pipeline().parameters.recomm_cosmos_database",
+										"type": "Expression"
+									},
+									"recomm_cosmos_collection": {
+										"value": "@pipeline().parameters.recomm_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_first_run": {
+										"value": "@pipeline().parameters.recomm_first_run",
+										"type": "Expression"
+									},
+									"recomm_ALERT_ON_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_ALERT_OFF_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_src_date_col_name": {
+										"value": "@pipeline().parameters.recomm_src_date_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_component_col_name": {
+										"value": "@pipeline().parameters.recomm_src_component_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_measurement_col_name": {
+										"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+										"type": "Expression"
+									},
+									"recomm_property_name": {
+										"value": "@pipeline().parameters.recomm_property_name",
+										"type": "Expression"
+									},
+									"recomm_flush_rec_count": {
+										"value": "@pipeline().parameters.recomm_flush_rec_count",
+										"type": "Expression"
+									},
+									"site_id": {
+										"value": "@pipeline().parameters.site_id",
+										"type": "Expression"
+									},
+									"asset_id": {
+										"value": "@pipeline().parameters.asset_id",
+										"type": "Expression"
+									},
+									"oc_property_type_name": {
+										"value": "@pipeline().parameters.oc_property_type_name",
+										"type": "Expression"
+									},
+									"utc_offset": {
+										"value": "@pipeline().parameters.utc_offset",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "RawOilConditionRecommendation",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "OilCondition",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/Calculate_RawOC_Recommendation",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									},
+									"cosmos_endpoint": {
+										"value": "@pipeline().parameters.cosmos_endpoint",
+										"type": "Expression"
+									},
+									"cosmos_primary_key": {
+										"value": "@pipeline().parameters.cosmos_primary_key",
+										"type": "Expression"
+									},
+									"oc_cosmos_database": {
+										"value": "@pipeline().parameters.oc_cosmos_database",
+										"type": "Expression"
+									},
+									"oc_cosmos_collection": {
+										"value": "@pipeline().parameters.oc_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_tab_name": {
+										"value": "@pipeline().parameters.recomm_tab_name",
+										"type": "Expression"
+									},
+									"severity_property_tab_name": {
+										"value": "@pipeline().parameters.severity_property_tab_name",
+										"type": "Expression"
+									},
+									"recomm_cosmos_database": {
+										"value": "@pipeline().parameters.recomm_cosmos_database",
+										"type": "Expression"
+									},
+									"recomm_cosmos_collection": {
+										"value": "@pipeline().parameters.recomm_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_first_run": {
+										"value": "@pipeline().parameters.recomm_first_run",
+										"type": "Expression"
+									},
+									"recomm_ALERT_ON_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_ALERT_OFF_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_src_date_col_name": {
+										"value": "@pipeline().parameters.recomm_src_date_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_component_col_name": {
+										"value": "@pipeline().parameters.recomm_src_component_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_measurement_col_name": {
+										"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+										"type": "Expression"
+									},
+									"recomm_property_name": {
+										"value": "@pipeline().parameters.recomm_property_name",
+										"type": "Expression"
+									},
+									"recomm_flush_rec_count": {
+										"value": "@pipeline().parameters.recomm_flush_rec_count",
+										"type": "Expression"
+									},
+									"site_id": {
+										"value": "@pipeline().parameters.site_id",
+										"type": "Expression"
+									},
+									"asset_id": {
+										"value": "@pipeline().parameters.asset_id",
+										"type": "Expression"
+									},
+									"oc_property_type_name": {
+										"value": "@pipeline().parameters.oc_property_type_name",
+										"type": "Expression"
+									},
+									"utc_offset": {
+										"value": "@pipeline().parameters.utc_offset",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "SensorInAir",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "OilSensorFileIngest",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_sensor_in_air_Ortadogu",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									},
+									"cosmos_endpoint": {
+										"value": "@pipeline().parameters.cosmos_endpoint",
+										"type": "Expression"
+									},
+									"cosmos_primary_key": {
+										"value": "@pipeline().parameters.cosmos_primary_key",
+										"type": "Expression"
+									},
+									"oc_cosmos_database": {
+										"value": "@pipeline().parameters.oc_cosmos_database",
+										"type": "Expression"
+									},
+									"oc_cosmos_collection": {
+										"value": "@pipeline().parameters.oc_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_tab_name": {
+										"value": "@pipeline().parameters.recomm_tab_name",
+										"type": "Expression"
+									},
+									"severity_property_tab_name": {
+										"value": "@pipeline().parameters.severity_property_tab_name",
+										"type": "Expression"
+									},
+									"recomm_cosmos_database": {
+										"value": "@pipeline().parameters.recomm_cosmos_database",
+										"type": "Expression"
+									},
+									"recomm_cosmos_collection": {
+										"value": "@pipeline().parameters.recomm_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_first_run": {
+										"value": "@pipeline().parameters.recomm_first_run",
+										"type": "Expression"
+									},
+									"recomm_ALERT_ON_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_ALERT_OFF_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_src_date_col_name": {
+										"value": "@pipeline().parameters.recomm_src_date_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_component_col_name": {
+										"value": "@pipeline().parameters.recomm_src_component_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_measurement_col_name": {
+										"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+										"type": "Expression"
+									},
+									"recomm_property_name": {
+										"value": "@pipeline().parameters.recomm_property_name",
+										"type": "Expression"
+									},
+									"recomm_flush_rec_count": {
+										"value": "@pipeline().parameters.recomm_flush_rec_count",
+										"type": "Expression"
+									},
+									"site_id": {
+										"value": "@pipeline().parameters.site_id",
+										"type": "Expression"
+									},
+									"asset_id": {
+										"value": "@pipeline().parameters.asset_id",
+										"type": "Expression"
+									},
+									"oc_property_type_name": {
+										"value": "@pipeline().parameters.oc_property_type_name",
+										"type": "Expression"
+									},
+									"utc_offset": {
+										"value": "@pipeline().parameters.utc_offset",
+										"type": "Expression"
+									},
+									"sia_cosmos_database": {
+										"value": "@pipeline().parameters.sia_cosmos_database",
+										"type": "Expression"
+									},
+									"sia_cosmos_collection": {
+										"value": "@pipeline().parameters.sia_cosmos_collection",
+										"type": "Expression"
+									},
+									"sia_property_type_name": {
+										"value": "@pipeline().parameters.sia_property_type_name",
+										"type": "Expression"
+									},
+									"sia_class_path": {
+										"value": "@pipeline().parameters.sia_class_path",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "RapidConditionChange",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "OilCondition",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_rapid_condition_change_Ortadogu",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									},
+									"cosmos_endpoint": {
+										"value": "@pipeline().parameters.cosmos_endpoint",
+										"type": "Expression"
+									},
+									"cosmos_primary_key": {
+										"value": "@pipeline().parameters.cosmos_primary_key",
+										"type": "Expression"
+									},
+									"oc_cosmos_database": {
+										"value": "@pipeline().parameters.oc_cosmos_database",
+										"type": "Expression"
+									},
+									"oc_cosmos_collection": {
+										"value": "@pipeline().parameters.oc_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_tab_name": {
+										"value": "@pipeline().parameters.recomm_tab_name",
+										"type": "Expression"
+									},
+									"severity_property_tab_name": {
+										"value": "@pipeline().parameters.severity_property_tab_name",
+										"type": "Expression"
+									},
+									"recomm_cosmos_database": {
+										"value": "@pipeline().parameters.recomm_cosmos_database",
+										"type": "Expression"
+									},
+									"recomm_cosmos_collection": {
+										"value": "@pipeline().parameters.recomm_cosmos_collection",
+										"type": "Expression"
+									},
+									"recomm_first_run": {
+										"value": "@pipeline().parameters.recomm_first_run",
+										"type": "Expression"
+									},
+									"recomm_ALERT_ON_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_ALERT_OFF_TRIGGER_QTY": {
+										"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+										"type": "Expression"
+									},
+									"recomm_src_date_col_name": {
+										"value": "@pipeline().parameters.recomm_src_date_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_component_col_name": {
+										"value": "@pipeline().parameters.recomm_src_component_col_name",
+										"type": "Expression"
+									},
+									"recomm_src_measurement_col_name": {
+										"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+										"type": "Expression"
+									},
+									"recomm_property_name": {
+										"value": "@pipeline().parameters.recomm_property_name",
+										"type": "Expression"
+									},
+									"recomm_flush_rec_count": {
+										"value": "@pipeline().parameters.recomm_flush_rec_count",
+										"type": "Expression"
+									},
+									"site_id": {
+										"value": "@pipeline().parameters.site_id",
+										"type": "Expression"
+									},
+									"asset_id": {
+										"value": "@pipeline().parameters.asset_id",
+										"type": "Expression"
+									},
+									"oc_property_type_name": {
+										"value": "@pipeline().parameters.oc_property_type_name",
+										"type": "Expression"
+									},
+									"utc_offset": {
+										"value": "@pipeline().parameters.utc_offset",
+										"type": "Expression"
+									},
+									"rcc_cosmos_database": {
+										"value": "@pipeline().parameters.rcc_cosmos_database",
+										"type": "Expression"
+									},
+									"rcc_cosmos_collection": {
+										"value": "@pipeline().parameters.rcc_cosmos_collection",
+										"type": "Expression"
+									},
+									"sia_class_path": {
+										"value": "@pipeline().parameters.sia_class_path",
+										"type": "Expression"
+									},
+									"rcc_model_path": {
+										"value": "@pipeline().parameters.rcc_model_path",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "SpotOilChange",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "OilSensorFileIngest",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_spot_oil_change_Ortadogu",
+								"baseParameters": {
+									"component_id": {
+										"value": "@string(item().component_id)",
+										"type": "Expression"
+									},
+									"sector_name": {
+										"value": "@pipeline().parameters.sector_name",
+										"type": "Expression"
+									},
+									"customer_name": {
+										"value": "@pipeline().parameters.customer_name",
+										"type": "Expression"
+									},
+									"customer_id": {
+										"value": "@pipeline().parameters.customer_id",
+										"type": "Expression"
+									},
+									"db_jdbcHostname": {
+										"value": "@pipeline().parameters.db_jdbcHostname",
+										"type": "Expression"
+									},
+									"db_jdbcDatabase": {
+										"value": "@pipeline().parameters.db_jdbcDatabase",
+										"type": "Expression"
+									},
+									"db_jdbcPort": {
+										"value": "@pipeline().parameters.db_jdbcPort",
+										"type": "Expression"
+									},
+									"kv_scope_name": {
+										"value": "@pipeline().parameters.kv_scope_name",
+										"type": "Expression"
+									},
+									"db_username_key": {
+										"value": "@pipeline().parameters.db_username_key",
+										"type": "Expression"
+									},
+									"db_password_key": {
+										"value": "@pipeline().parameters.db_password_key",
+										"type": "Expression"
+									},
+									"ctrl_load_table_name": {
+										"value": "@pipeline().parameters.ctrl_load_table_name",
+										"type": "Expression"
+									},
+									"ctrl_log_table_name": {
+										"value": "@pipeline().parameters.ctrl_log_table_name",
+										"type": "Expression"
+									},
+									"adls_base_dir": {
+										"value": "@pipeline().parameters.adls_base_dir",
+										"type": "Expression"
+									},
+									"adls_client_token_type": {
+										"value": "@pipeline().parameters.adls_client_token_type",
+										"type": "Expression"
+									},
+									"adls_client_id_key": {
+										"value": "@pipeline().parameters.adls_client_id_key",
+										"type": "Expression"
+									},
+									"adls_client_credential_key": {
+										"value": "@pipeline().parameters.adls_client_credential_key",
+										"type": "Expression"
+									},
+									"adls_client_url": {
+										"value": "@pipeline().parameters.adls_client_url",
+										"type": "Expression"
+									},
+									"sensor_type_name": {
+										"value": "@pipeline().parameters.sensor_type_name",
+										"type": "Expression"
+									},
+									"lubricant_limit_tab_name": {
+										"value": "@pipeline().parameters.lubricant_limit_tab_name",
+										"type": "Expression"
+									},
+									"sensor_tab_name": {
+										"value": "@pipeline().parameters.sensor_tab_name",
+										"type": "Expression"
+									},
+									"component_tab_name": {
+										"value": "@pipeline().parameters.component_tab_name",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loops_standard_connection",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "OptimizeDeltaTable",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "InterateForEachComponent",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/LOOPS_DevOps/Power/Ortadogu/job_optimize_delta_tables_Ortadogu",
+					"baseParameters": {
+						"sector_name": {
+							"value": "@pipeline().parameters.sector_name",
+							"type": "Expression"
+						},
+						"customer_name": {
+							"value": "@pipeline().parameters.customer_name",
+							"type": "Expression"
+						},
+						"customer_id": {
+							"value": "@pipeline().parameters.customer_id",
+							"type": "Expression"
+						},
+						"db_jdbcHostname": {
+							"value": "@pipeline().parameters.db_jdbcHostname",
+							"type": "Expression"
+						},
+						"db_jdbcDatabase": {
+							"value": "@pipeline().parameters.db_jdbcDatabase",
+							"type": "Expression"
+						},
+						"db_jdbcPort": {
+							"value": "@pipeline().parameters.db_jdbcPort",
+							"type": "Expression"
+						},
+						"kv_scope_name": {
+							"value": "@pipeline().parameters.kv_scope_name",
+							"type": "Expression"
+						},
+						"db_username_key": {
+							"value": "@pipeline().parameters.db_username_key",
+							"type": "Expression"
+						},
+						"db_password_key": {
+							"value": "@pipeline().parameters.db_password_key",
+							"type": "Expression"
+						},
+						"ctrl_load_table_name": {
+							"value": "@pipeline().parameters.ctrl_load_table_name",
+							"type": "Expression"
+						},
+						"ctrl_log_table_name": {
+							"value": "@pipeline().parameters.ctrl_log_table_name",
+							"type": "Expression"
+						},
+						"adls_base_dir": {
+							"value": "@pipeline().parameters.adls_base_dir",
+							"type": "Expression"
+						},
+						"adls_client_token_type": {
+							"value": "@pipeline().parameters.adls_client_token_type",
+							"type": "Expression"
+						},
+						"adls_client_id_key": {
+							"value": "@pipeline().parameters.adls_client_id_key",
+							"type": "Expression"
+						},
+						"adls_client_credential_key": {
+							"value": "@pipeline().parameters.adls_client_credential_key",
+							"type": "Expression"
+						},
+						"adls_client_url": {
+							"value": "@pipeline().parameters.adls_client_url",
+							"type": "Expression"
+						},
+						"sensor_type_name": {
+							"value": "@pipeline().parameters.sensor_type_name",
+							"type": "Expression"
+						},
+						"lubricant_limit_tab_name": {
+							"value": "@pipeline().parameters.lubricant_limit_tab_name",
+							"type": "Expression"
+						},
+						"sensor_tab_name": {
+							"value": "@pipeline().parameters.sensor_tab_name",
+							"type": "Expression"
+						},
+						"component_tab_name": {
+							"value": "@pipeline().parameters.component_tab_name",
+							"type": "Expression"
+						},
+						"cosmos_endpoint": {
+							"value": "@pipeline().parameters.cosmos_endpoint",
+							"type": "Expression"
+						},
+						"cosmos_primary_key": {
+							"value": "@pipeline().parameters.cosmos_primary_key",
+							"type": "Expression"
+						},
+						"oc_cosmos_database": {
+							"value": "@pipeline().parameters.oc_cosmos_database",
+							"type": "Expression"
+						},
+						"oc_cosmos_collection": {
+							"value": "@pipeline().parameters.oc_cosmos_collection",
+							"type": "Expression"
+						},
+						"recomm_tab_name": {
+							"value": "@pipeline().parameters.recomm_tab_name",
+							"type": "Expression"
+						},
+						"severity_property_tab_name": {
+							"value": "@pipeline().parameters.severity_property_tab_name",
+							"type": "Expression"
+						},
+						"recomm_cosmos_database": {
+							"value": "@pipeline().parameters.recomm_cosmos_database",
+							"type": "Expression"
+						},
+						"recomm_cosmos_collection": {
+							"value": "@pipeline().parameters.recomm_cosmos_collection",
+							"type": "Expression"
+						},
+						"recomm_first_run": {
+							"value": "@pipeline().parameters.recomm_first_run",
+							"type": "Expression"
+						},
+						"recomm_ALERT_ON_TRIGGER_QTY": {
+							"value": "@pipeline().parameters.recomm_ALERT_ON_TRIGGER_QTY",
+							"type": "Expression"
+						},
+						"recomm_ALERT_OFF_TRIGGER_QTY": {
+							"value": "@pipeline().parameters.recomm_ALERT_OFF_TRIGGER_QTY",
+							"type": "Expression"
+						},
+						"recomm_src_date_col_name": {
+							"value": "@pipeline().parameters.recomm_src_date_col_name",
+							"type": "Expression"
+						},
+						"recomm_src_component_col_name": {
+							"value": "@pipeline().parameters.recomm_src_component_col_name",
+							"type": "Expression"
+						},
+						"recomm_src_measurement_col_name": {
+							"value": "@pipeline().parameters.recomm_src_measurement_col_name",
+							"type": "Expression"
+						},
+						"recomm_property_name": {
+							"value": "@pipeline().parameters.recomm_property_name",
+							"type": "Expression"
+						},
+						"recomm_flush_rec_count": {
+							"value": "@pipeline().parameters.recomm_flush_rec_count",
+							"type": "Expression"
+						},
+						"site_id": {
+							"value": "@pipeline().parameters.site_id",
+							"type": "Expression"
+						},
+						"asset_id": {
+							"value": "@pipeline().parameters.asset_id",
+							"type": "Expression"
+						},
+						"oc_property_type_name": {
+							"value": "@pipeline().parameters.oc_property_type_name",
+							"type": "Expression"
+						},
+						"utc_offset": {
+							"value": "@pipeline().parameters.utc_offset",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "loops_standard_connection",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"sector_name": {
+				"type": "string",
+				"defaultValue": "Power"
+			},
+			"customer_name": {
+				"type": "string",
+				"defaultValue": "Ortadogu"
+			},
+			"customer_id": {
+				"type": "string",
+				"defaultValue": "25551"
+			},
+			"db_jdbcHostname": {
+				"type": "string",
+				"defaultValue": "sqlsv-loops-dev.database.windows.net"
+			},
+			"db_jdbcDatabase": {
+				"type": "string",
+				"defaultValue": "sqldb-loops-dev"
+			},
+			"db_jdbcPort": {
+				"type": "string",
+				"defaultValue": "1433"
+			},
+			"kv_scope_name": {
+				"type": "string",
+				"defaultValue": "kv-loops-dev-scope"
+			},
+			"db_username_key": {
+				"type": "string",
+				"defaultValue": "sqlAdministratorLogin"
+			},
+			"db_password_key": {
+				"type": "string",
+				"defaultValue": "sqlAdministratorLoginPassword"
+			},
+			"ctrl_load_table_name": {
+				"type": "string",
+				"defaultValue": "ctrl_load_management"
+			},
+			"ctrl_log_table_name": {
+				"type": "string",
+				"defaultValue": "ctrl_log_message"
+			},
+			"adls_base_dir": {
+				"type": "string",
+				"defaultValue": "/mnt/datalake/"
+			},
+			"adls_client_token_type": {
+				"type": "string",
+				"defaultValue": "ClientCredential"
+			},
+			"adls_client_id_key": {
+				"type": "string",
+				"defaultValue": "datalakeClientId"
+			},
+			"adls_client_credential_key": {
+				"type": "string",
+				"defaultValue": "datalakeCredentials"
+			},
+			"adls_client_url": {
+				"type": "string",
+				"defaultValue": "https://login.microsoftonline.com/c7c788ae-f969-42dc-8d60-9f93bf7284a5/oauth2/token"
+			},
+			"sensor_type_name": {
+				"type": "string",
+				"defaultValue": "Loss_Factor"
+			},
+			"lubricant_limit_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.COMPONENT_PROPERTY_LIMIT"
+			},
+			"sensor_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.SENSOR"
+			},
+			"component_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.LOOPS_COMPONENT"
+			},
+			"cosmos_endpoint": {
+				"type": "string",
+				"defaultValue": "https://cosdb-loops-dev.documents.azure.com:443/"
+			},
+			"cosmos_primary_key": {
+				"type": "string",
+				"defaultValue": "cosmosPrimaryKey"
+			},
+			"oc_cosmos_database": {
+				"type": "string",
+				"defaultValue": "metricDataDB"
+			},
+			"oc_cosmos_collection": {
+				"type": "string",
+				"defaultValue": "M000003"
+			},
+			"recomm_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.RECOMMENDATION"
+			},
+			"severity_property_tab_name": {
+				"type": "string",
+				"defaultValue": "master_tables.PROPERTY"
+			},
+			"recomm_cosmos_database": {
+				"type": "string",
+				"defaultValue": "C25551"
+			},
+			"recomm_cosmos_collection": {
+				"type": "string",
+				"defaultValue": "events"
+			},
+			"recomm_first_run": {
+				"type": "string",
+				"defaultValue": "N"
+			},
+			"recomm_ALERT_ON_TRIGGER_QTY": {
+				"type": "string",
+				"defaultValue": "9"
+			},
+			"recomm_ALERT_OFF_TRIGGER_QTY": {
+				"type": "string",
+				"defaultValue": "9"
+			},
+			"recomm_src_date_col_name": {
+				"type": "string",
+				"defaultValue": "t"
+			},
+			"recomm_src_component_col_name": {
+				"type": "string",
+				"defaultValue": "eId"
+			},
+			"recomm_src_measurement_col_name": {
+				"type": "string",
+				"defaultValue": "v"
+			},
+			"recomm_property_name": {
+				"type": "string",
+				"defaultValue": "OilCondition"
+			},
+			"recomm_flush_rec_count": {
+				"type": "string",
+				"defaultValue": "100"
+			},
+			"site_id": {
+				"type": "string",
+				"defaultValue": "19761"
+			},
+			"asset_id": {
+				"type": "string",
+				"defaultValue": "00001"
+			},
+			"oc_property_type_name": {
+				"type": "string",
+				"defaultValue": "OilCondition"
+			},
+			"utc_offset": {
+				"type": "string",
+				"defaultValue": "0"
+			},
+			"sia_cosmos_database": {
+				"type": "string",
+				"defaultValue": "metricDataDB"
+			},
+			"sia_cosmos_collection": {
+				"type": "string",
+				"defaultValue": "M000011"
+			},
+			"sia_property_type_name": {
+				"type": "string",
+				"defaultValue": "SensorInAir"
+			},
+			"sia_class_path": {
+				"type": "string",
+				"defaultValue": "/LOOPS_DevOps/ControlFunctionAndClasses/SensorInAirClass"
+			},
+			"rcc_cosmos_database": {
+				"type": "string",
+				"defaultValue": "metricDataDB"
+			},
+			"rcc_cosmos_collection": {
+				"type": "string",
+				"defaultValue": "M000012"
+			},
+			"rcc_model_path": {
+				"type": "string",
+				"defaultValue": "adl://dlsloopsdev.azuredatalakestore.net/Models/Ortadogu/rcc/rcc_v2.egg"
+			}
+		},
+		"folder": {
+			"name": "Ortadogu"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-04-01T12:44:33Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

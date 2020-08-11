@@ -1,0 +1,115 @@
+{
+	"name": "CosmosDB_replication",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_0xg",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_0xg",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.collectionName}"
+								},
+								{
+									"name": "Destination",
+									"value": "@{item().destination.collectionName}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "CosmosDbSqlApiSource",
+									"preferredRegions": []
+								},
+								"sink": {
+									"type": "CosmosDbSqlApiSink",
+									"writeBehavior": "insert"
+								},
+								"enableStaging": false,
+								"validateDataConsistency": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_0xg",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_collectionName": "@item().source.collectionName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_0xg",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_collectionName": "@item().destination.collectionName"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"collectionName": "assets"
+						},
+						"destination": {
+							"collectionName": "assets"
+						}
+					},
+					{
+						"source": {
+							"collectionName": "customers"
+						},
+						"destination": {
+							"collectionName": "customers"
+						}
+					},
+					{
+						"source": {
+							"collectionName": "equipment"
+						},
+						"destination": {
+							"collectionName": "equipment"
+						}
+					},
+					{
+						"source": {
+							"collectionName": "sites"
+						},
+						"destination": {
+							"collectionName": "sites"
+						}
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-07-15T10:00:32Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

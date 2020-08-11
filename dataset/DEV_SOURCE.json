@@ -1,0 +1,51 @@
+{
+	"name": "DEV_SOURCE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DEV-SQL-Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SOURCE_COMPONENT_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_TYPE_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "COMPONENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SECTOR_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_API_ID",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "SOURCE"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

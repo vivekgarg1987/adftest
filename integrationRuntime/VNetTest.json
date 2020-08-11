@@ -1,0 +1,7 @@
+{
+	"name": "VNetTest",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "A self-hosted integration runtime used to access customers on-prem data"
+	}
+}

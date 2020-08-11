@@ -1,0 +1,963 @@
+{
+	"name": "cumulocity_Id102018960_json",
+	"properties": {
+		"activities": [
+			{
+				"name": "getLastTimestamp",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[readLastTimestamp]",
+						"storedProcedureParameters": {
+							"COMPONENT_ID": {
+								"type": "Int64",
+								"value": {
+									"value": "@pipeline().parameters.componentId",
+									"type": "Expression"
+								}
+							},
+							"JOB_NAME": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							}
+						},
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "loopsSQLloadManagement",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "ifFirstRequest",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "getLastTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(contains(activity('getLastTimestamp').output,'firstRow'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "cumulocityRequest",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "startedSQLwrite",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010"
+								},
+								"sink": {
+									"type": "AzureDataLakeStoreSink",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "cumulocity",
+									"type": "DatasetReference",
+									"parameters": {
+										"source": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"relativeURL": {
+											"value": "@pipeline().parameters.relativeURL",
+											"type": "Expression"
+										},
+										"pageSize": {
+											"value": "@pipeline().parameters.pageSize",
+											"type": "Expression"
+										},
+										"withTotalPages": {
+											"value": "@pipeline().parameters.withTotalPages",
+											"type": "Expression"
+										},
+										"MyWindowStart": {
+											"value": "@formatDateTime(activity('getLastTimestamp').output.firstRow.lastTimestamp, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										},
+										"MyWindowEnd": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureDataLakeStoreFile1",
+									"type": "DatasetReference",
+									"parameters": {
+										"componentId": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"MyWindowStart": {
+											"value": "@formatDateTime(activity('getLastTimestamp').output.firstRow.lastTimestamp, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										},
+										"MyWindowEnd": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										},
+										"cId": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"sectorName": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "startedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(activity('getLastTimestamp').output.firstRow.lastTimestamp, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "STARTED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "completedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "cumulocityRequest",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(activity('getLastTimestamp').output.firstRow.lastTimestamp, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "COMPLETED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "failedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "cumulocityRequest",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(activity('getLastTimestamp').output.firstRow.lastTimestamp, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "FAILED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "firstCumulocityRequest",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "firstStartedSQLwrite",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010"
+								},
+								"sink": {
+									"type": "AzureDataLakeStoreSink",
+									"copyBehavior": "PreserveHierarchy"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "cumulocity",
+									"type": "DatasetReference",
+									"parameters": {
+										"source": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"relativeURL": {
+											"value": "@pipeline().parameters.relativeURL",
+											"type": "Expression"
+										},
+										"pageSize": {
+											"value": "@pipeline().parameters.pageSize",
+											"type": "Expression"
+										},
+										"withTotalPages": {
+											"value": "@pipeline().parameters.withTotalPages",
+											"type": "Expression"
+										},
+										"MyWindowStart": {
+											"value": "@pipeline().parameters.MyWindowInitialStart",
+											"type": "Expression"
+										},
+										"MyWindowEnd": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureDataLakeStoreFile1",
+									"type": "DatasetReference",
+									"parameters": {
+										"componentId": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"MyWindowStart": {
+											"value": "@pipeline().parameters.MyWindowInitialStart",
+											"type": "Expression"
+										},
+										"MyWindowEnd": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+											"type": "Expression"
+										},
+										"cId": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"sectorName": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "firstStartedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(pipeline().parameters.MyWindowInitialStart, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "STARTED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "firstCompletedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "firstCumulocityRequest",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(pipeline().parameters.MyWindowInitialStart, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "COMPLETED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "firstFailedSQLwrite",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "firstCumulocityRequest",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[logCumulocityRequest]",
+								"storedProcedureParameters": {
+									"COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.componentId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_ID": {
+										"value": {
+											"value": "@pipeline().parameters.cId",
+											"type": "Expression"
+										},
+										"type": "Int64"
+									},
+									"CUSTOMER_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.customerName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"ERROR_MESSAGE_TEXT": {
+										"value": null,
+										"type": "String"
+									},
+									"ERROR_TYPE_NAME": {
+										"value": null,
+										"type": "String"
+									},
+									"FILE_NAME": {
+										"value": {
+											"value": "@concat('Id',pipeline().parameters.source,'_From',formatDateTime(pipeline().parameters.MyWindowInitialStart, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(pipeline().TriggerTime, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_NAME": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"JOB_STATUS": {
+										"value": "FAILED",
+										"type": "String"
+									},
+									"LAST_PROCESSED_RECORD_DATE_TIME": {
+										"value": null,
+										"type": "DateTime"
+									},
+									"MAX_RUNNING_HOURS_DURATION": {
+										"value": null,
+										"type": "Single"
+									},
+									"RECORD_COUNT": {
+										"value": null,
+										"type": "Int64"
+									},
+									"SECTOR_NAME": {
+										"value": {
+											"value": "@pipeline().parameters.sectorName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"SOURCE_COMPONENT_ID": {
+										"value": {
+											"value": "@pipeline().parameters.source",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"START_TIME": {
+										"value": {
+											"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd HH:mm:ss.FFF')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"TOP_UP_SECONDS_DURATION": {
+										"value": null,
+										"type": "Int64"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "loopsSQLbackend",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"source": {
+				"type": "string",
+				"defaultValue": "102018960"
+			},
+			"sectorName": {
+				"type": "string",
+				"defaultValue": "Mining"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "11111"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "/measurement/measurements"
+			},
+			"withTotalPages": {
+				"type": "string",
+				"defaultValue": "true"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "2000"
+			},
+			"componentId": {
+				"type": "string",
+				"defaultValue": "102018960"
+			},
+			"MyWindowInitialStart": {
+				"type": "string",
+				"defaultValue": "2019-08-05T00:00:00Z"
+			},
+			"customerName": {
+				"type": "string",
+				"defaultValue": "KGHM"
+			}
+		},
+		"folder": {
+			"name": "cumulocityAuto/KGHM"
+		},
+		"annotations": [],
+		"lastPublishTime": "2019-12-05T20:00:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

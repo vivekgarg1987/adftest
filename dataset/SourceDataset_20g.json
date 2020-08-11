@@ -1,0 +1,192 @@
+{
+	"name": "SourceDataset_20g",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "RECOMMENDATION_ID",
+				"type": "smallint",
+				"precision": 5,
+				"scale": 0
+			},
+			{
+				"name": "MANUFACTURER_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "MODEL_TYPE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "LUBRICANT_GROUP_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "LUBRICANT_MANAGEMENT_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "FUEL_GROUP_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "FRESH_OIL_VALUE",
+				"type": "float",
+				"precision": 53,
+				"scale": 0
+			},
+			{
+				"name": "LOOPS_STATE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PROPERTY_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "UNIT_OF_MEASURE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_TYPE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PROPERTY_IMPORTANCE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "BOUNDARY_TYPE_NAME",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_FROM_VALUE",
+				"type": "float",
+				"precision": 53,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_TO_VALUE",
+				"type": "float",
+				"precision": 53,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_FORMULA_DESC",
+				"type": "nvarchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_IS_ACTIVE_IND",
+				"type": "bit",
+				"precision": 1,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_EFECTIVE_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "DIAGNOSIS_SHORT_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_NAME",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "DIAGNOSIS_LONG_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_LONG_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ALERT_START_LONG_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ALERT_START_SHORT_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ALERT_END_LONG_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ALERT_END_SHORT_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RECOMMENDATION_SEVERITY_RANK",
+				"type": "smallint",
+				"precision": 5,
+				"scale": 0
+			},
+			{
+				"name": "STATE_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "HEALTH_DESC",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "RECOMMENDATION_STATE"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

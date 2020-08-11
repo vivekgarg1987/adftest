@@ -1,0 +1,55 @@
+{
+	"name": "AzureDataLakecomAp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStoreGen1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"componentId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"sectorName": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"sourceType": {
+				"type": "string",
+				"defaultValue": "TEST"
+			}
+		},
+		"folder": {
+			"name": "comAp"
+		},
+		"annotations": [],
+		"type": "AzureDataLakeStoreFile",
+		"typeProperties": {
+			"format": {
+				"type": "JsonFormat",
+				"filePattern": "setOfObjects"
+			},
+			"fileName": {
+				"value": "@concat('Id',dataset().componentId,'_From',formatDateTime(dataset().MyWindowStart, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(dataset().MyWindowEnd, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+				"type": "Expression"
+			},
+			"folderPath": {
+				"value": "@concat('landingZone/',dataset().sectorName,'/Sensitive/TRN/',dataset().cId,'/',dataset().sourceType)",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

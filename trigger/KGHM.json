@@ -1,0 +1,25 @@
+{
+	"name": "KGHM",
+	"properties": {
+		"description": "This trigger will run the KGHM pipeline every 15 minutes",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pre_process_kghm_oil_condition",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 30,
+				"startTime": "2019-10-04T09:40:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

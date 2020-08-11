@@ -1,0 +1,196 @@
+{
+	"name": "PaginationTESTcomAp",
+	"properties": {
+		"activities": [
+			{
+				"name": "authenticate",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "POST",
+							"additionalHeaders": {
+								"value": "@{concat('Comap-Key: ',pipeline().parameters.ComapKey,'\nContent-Type: application/x-www-form-urlencoded')}",
+								"type": "Expression"
+							},
+							"requestBody": {
+								"value": "@{concat(pipeline().parameters.test1,pipeline().parameters.username,pipeline().parameters.test2,pipeline().parameters.password,pipeline().parameters.test3)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "ComApAuthenticateUser",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeURL": {
+								"value": "@pipeline().parameters.relativeURLauth",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "ComApRequest",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "authenticate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010"
+					},
+					"sink": {
+						"type": "AzureDataLakeStoreSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "comApREST",
+						"type": "DatasetReference",
+						"parameters": {
+							"ComapKey": {
+								"value": "@pipeline().parameters.ComapKey",
+								"type": "Expression"
+							},
+							"applicationToken": {
+								"value": "@activity('authenticate').output.firstRow.applicationToken",
+								"type": "Expression"
+							},
+							"relativeURL": {
+								"value": "@concat('units/',pipeline().parameters.sourceUnitGuid,'/history?from=',formatDateTime(pipeline().parameters.MyWindowStart, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ'),'&to=',formatDateTime(pipeline().parameters.MyWindowEnd, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ'),'&valueGuid=',pipeline().parameters.sourceValueGuids)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureDataLakecomAp",
+						"type": "DatasetReference",
+						"parameters": {
+							"componentId": {
+								"value": "@pipeline().parameters.componentId",
+								"type": "Expression"
+							},
+							"MyWindowStart": {
+								"value": "@formatDateTime(pipeline().parameters.MyWindowStart, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+								"type": "Expression"
+							},
+							"MyWindowEnd": {
+								"value": "@formatDateTime(pipeline().parameters.MyWindowEnd, 'yyyy-MM-ddTHH:mm:ss.FFFFFFZ')",
+								"type": "Expression"
+							},
+							"cId": {
+								"value": "@pipeline().parameters.cId",
+								"type": "Expression"
+							},
+							"sectorName": {
+								"value": "@pipeline().parameters.sectorName",
+								"type": "Expression"
+							},
+							"sourceType": "comAp"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"username": {
+				"type": "string",
+				"defaultValue": "ShellRemoteSense"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "Lubeanalyst2"
+			},
+			"ComapKey": {
+				"type": "string",
+				"defaultValue": "276c6ea2fc4a467f93e872d023fa0b39"
+			},
+			"relativeURLauth": {
+				"type": "string",
+				"defaultValue": "authenticate"
+			},
+			"relativeURLunits": {
+				"type": "string",
+				"defaultValue": "units"
+			},
+			"sourceUnitGuid": {
+				"type": "string",
+				"defaultValue": "gensetc6afbd6e403a4253a115c53dc6d48638"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"test1": {
+				"type": "string",
+				"defaultValue": "{\"username\":\""
+			},
+			"test2": {
+				"type": "string",
+				"defaultValue": "\",\"password\":\""
+			},
+			"test3": {
+				"type": "string",
+				"defaultValue": "\" }"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "2020-03-18T00:00:00Z"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "2020-03-19T00:00:00Z"
+			},
+			"sourceValueGuids": {
+				"type": "string",
+				"defaultValue": "0DC2739F-0FC9-4A17-BC91-26E5DDA19ED8"
+			},
+			"componentId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"sectorName": {
+				"type": "string",
+				"defaultValue": "TEST"
+			}
+		},
+		"folder": {
+			"name": "TESTs"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-03-27T11:14:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

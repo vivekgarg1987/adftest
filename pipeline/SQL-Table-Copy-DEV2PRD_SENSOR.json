@@ -1,0 +1,58 @@
+{
+	"name": "SQL-Table-Copy-DEV2PRD_SENSOR",
+	"properties": {
+		"activities": [
+			{
+				"name": "CopySQLTable-COMPONENT_PROPERTY_LIMIT",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DEV_SENSOR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DEV_SENSOR_DEV",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "DEV-to-PRD-SQL-Copy"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-07-16T11:37:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

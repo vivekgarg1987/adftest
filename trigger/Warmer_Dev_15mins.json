@@ -1,0 +1,51 @@
+{
+	"name": "Warmer_Dev_15mins",
+	"properties": {
+		"description": "Ingest Warmer data from their SQL Server every fifteen minutes",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Warmeversorgungsollstedt_149",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"customer_id": "4012",
+					"customer_name": "warmeversorgungsollstedt",
+					"inputPath": "landingZone/Power/Sensitive/TRN/",
+					"db_jdbcHostname": "sqlsv-loops-dev.database.windows.net",
+					"db_jdbcDatabase": "sqldb-loops-dev",
+					"db_jdbcPort": "1433",
+					"ctrl_log_table_name": "ctrl_log_message",
+					"ctrl_load_table_name": "ctrl_load_management",
+					"sector_name": "Power",
+					"component_id": "1528693",
+					"kv_scope_name": "kv-loops-dev-scope",
+					"db_username_key": "sqlAdministratorLogin",
+					"db_password_key": "sqlAdministratorLoginPassword",
+					"adls_base_dir": "dbfs:/mnt/datalake/",
+					"sensor_type_name": "Loss_Factor",
+					"lubricant_limit_tab_name": "master_tables.COMPONENT_PROPERTY_LIMIT",
+					"sensor_tab_name": "master_tables.SENSOR",
+					"component_tab_name": "master_tables.LOOPS_COMPONENT",
+					"cosmos_endpoint": "https://cosdb-loops-dev.documents.azure.com:443/",
+					"cosmos_primary_key": "cosmosPrimaryKey",
+					"oc_cosmos_database": "metricDataDB",
+					"oc_cosmos_collection": "M000003",
+					"oc_property_type_name": "OilCondition",
+					"delta_table_name": "warmeversorgungsollstedt_oil_raw"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 6,
+				"startTime": "2020-07-30T14:15:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

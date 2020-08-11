@@ -1,0 +1,223 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "getCustomerMetadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT COMPONENT_ID, SOURCE_COMPONENT_ID, SECTOR_NAME, CUSTOMER_NAME\nFROM [master_tables].[SOURCE]\nWHERE CUSTOMER_ID =', pipeline().parameters.cId)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SQL_LOOPS_COMPONENT",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "getCustomerMetadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('getCustomerMetadata').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "GeneralCumulocity",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "GeneralCumulocity",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"source": {
+										"value": "@item().SOURCE_COMPONENT_ID",
+										"type": "Expression"
+									},
+									"sectorName": {
+										"value": "@item().SECTOR_NAME",
+										"type": "Expression"
+									},
+									"cId": {
+										"value": "@pipeline().parameters.cId",
+										"type": "Expression"
+									},
+									"relativeURL": "/measurement/measurements",
+									"withTotalPages": "true",
+									"pageSize": "2000",
+									"componentId": {
+										"value": "@item().COMPONENT_ID",
+										"type": "Expression"
+									},
+									"MyWindowInitialStart": {
+										"value": "@pipeline().parameters.MyWindowInitialStart",
+										"type": "Expression"
+									},
+									"customerName": {
+										"value": "@item().CUSTOMER_NAME",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "GeneralCumulocity_copy1",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "GeneralCumulocity",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"source": {
+										"value": "@item().SOURCE_COMPONENT_ID",
+										"type": "Expression"
+									},
+									"sectorName": {
+										"value": "@item().SECTOR_NAME",
+										"type": "Expression"
+									},
+									"cId": {
+										"value": "@pipeline().parameters.cId",
+										"type": "Expression"
+									},
+									"relativeURL": "/measurement/measurements",
+									"withTotalPages": "true",
+									"pageSize": "2000",
+									"componentId": {
+										"value": "@item().COMPONENT_ID",
+										"type": "Expression"
+									},
+									"MyWindowInitialStart": {
+										"value": "@pipeline().parameters.MyWindowInitialStart",
+										"type": "Expression"
+									},
+									"customerName": {
+										"value": "@item().CUSTOMER_NAME",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Execute Pipeline1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Ortadogu_OC_Multi_Threaded",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"sector_name": "Power",
+						"customer_name": "Ortadogu",
+						"customer_id": {
+							"value": "@pipeline().parameters.cId",
+							"type": "Expression"
+						},
+						"db_jdbcHostname": "sqlsv-loops-dev.database.windows.net",
+						"db_jdbcDatabase": "sqldb-loops-dev",
+						"db_jdbcPort": "1433",
+						"kv_scope_name": "kv-loops-dev-scope",
+						"db_username_key": "sqlAdministratorLogin",
+						"db_password_key": "sqlAdministratorLoginPassword",
+						"ctrl_load_table_name": "ctrl_load_management",
+						"ctrl_log_table_name": "ctrl_log_message",
+						"adls_base_dir": "adl://dlsloopsdev.azuredatalakestore.net/",
+						"adls_client_token_type": "ClientCredential",
+						"adls_client_id_key": "datalakeClientId",
+						"adls_client_credential_key": "datalakeCredentials",
+						"adls_client_url": "https://login.microsoftonline.com/c7c788ae-f969-42dc-8d60-9f93bf7284a5/oauth2/token",
+						"sensor_type_name": "Loss Factor",
+						"lubricant_limit_tab_name": "master_tables.COMPONENT_PROPERTY_LIMIT",
+						"sensor_tab_name": "master_tables.SENSOR",
+						"component_tab_name": "master_tables.LOOPS_COMPONENT",
+						"cosmos_endpoint": "https://cosdb-loops-dev.documents.azure.com:443/",
+						"cosmos_primary_key": "cosmosPrimaryKey",
+						"oc_cosmos_database": "metricDataDB",
+						"oc_cosmos_collection": "M000003",
+						"recomm_tab_name": "master_tables.RECOMMENDATION",
+						"severity_property_tab_name": "master_tables.PROPERTY",
+						"recomm_cosmos_database": "C25551",
+						"recomm_cosmos_collection": "eventsv2",
+						"recomm_first_run": "N",
+						"recomm_ALERT_ON_TRIGGER_QTY": "3",
+						"recomm_ALERT_OFF_TRIGGER_QTY": "3",
+						"recomm_src_date_col_name": "t",
+						"recomm_src_component_col_name": "eId",
+						"recomm_src_measurement_col_name": "v",
+						"recomm_property_name": "OilCondition",
+						"recomm_flush_rec_count": "100",
+						"site_id": "19761",
+						"asset_id": "00001",
+						"oc_property_type_name": "OilCondition",
+						"utc_offset": "0"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"cId": {
+				"type": "string",
+				"defaultValue": "25551"
+			},
+			"MyWindowInitialStart": {
+				"type": "string",
+				"defaultValue": "2020-01-25T00:00:00Z"
+			}
+		},
+		"folder": {
+			"name": "Ortadogu"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-03-17T09:57:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

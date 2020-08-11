@@ -1,0 +1,112 @@
+{
+	"name": "BakerHughesjson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStoreGen1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BakerHughes"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"folderPath": "landingZone/Power/Sensitive/TRN/25551_TEST/Cumulocity_json"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"self": {
+					"type": "string"
+				},
+				"statistics": {
+					"type": "object",
+					"properties": {
+						"totalPages": {
+							"type": "null"
+						},
+						"currentPage": {
+							"type": "integer"
+						},
+						"pageSize": {
+							"type": "integer"
+						}
+					}
+				},
+				"measurements": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"self": {
+								"type": "string"
+							},
+							"time": {
+								"type": "string"
+							},
+							"id": {
+								"type": "string"
+							},
+							"source": {
+								"type": "object",
+								"properties": {
+									"self": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									}
+								}
+							},
+							"type": {
+								"type": "string"
+							},
+							"ocs_OilReading": {
+								"type": "object",
+								"properties": {
+									"ambTemp": {
+										"type": "object",
+										"properties": {
+											"unit": {
+												"type": "string"
+											},
+											"value": {
+												"type": "number"
+											}
+										}
+									},
+									"oilCond": {
+										"type": "object",
+										"properties": {
+											"unit": {
+												"type": "string"
+											},
+											"value": {
+												"type": "number"
+											}
+										}
+									},
+									"oilTemp": {
+										"type": "object",
+										"properties": {
+											"unit": {
+												"type": "string"
+											},
+											"value": {
+												"type": "number"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

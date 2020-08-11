@@ -1,0 +1,75 @@
+{
+	"name": "DEV_LOOPS_COMPONENT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DEV-SQL-Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "COMPONENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "EQUIPMENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MAPPING_PATTERN_CODE",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "MANUFACTURER_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MODEL_TYPE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LUBRICANT_GROUP_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LUBRICANT_MANAGEMENT_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FUEL_GROUP_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LOOPS_STATE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "COMPONENT_INTERVAL_DURATION",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "LOOPS_COMPONENT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

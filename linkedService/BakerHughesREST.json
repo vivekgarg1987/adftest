@@ -1,0 +1,13 @@
+{
+	"name": "BakerHughesREST",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://qa.vitalyx.fullstream.ai/v1/batwomen/",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

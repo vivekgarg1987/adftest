@@ -1,0 +1,144 @@
+{
+	"name": "DEV_RECOMMENDATION_STATE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DEV-SQL-Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "RECOMMENDATION_ID",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "MANUFACTURER_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MODEL_TYPE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LUBRICANT_GROUP_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LUBRICANT_MANAGEMENT_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FUEL_GROUP_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FRESH_OIL_VALUE",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "LOOPS_STATE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PROPERTY_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "UNIT_OF_MEASURE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RECOMMENDATION_TYPE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PROPERTY_IMPORTANCE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BOUNDARY_TYPE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_FROM_VALUE",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_TO_VALUE",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RECOMMENDATION_LIMIT_FORMULA_DESC",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RECOMMENDATION_IS_ACTIVE_IND",
+				"type": "bit"
+			},
+			{
+				"name": "RECOMMENDATION_EFECTIVE_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "DIAGNOSIS_SHORT_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "RECOMMENDATION_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DIAGNOSIS_LONG_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "RECOMMENDATION_LONG_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "ALERT_START_LONG_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "ALERT_START_SHORT_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "ALERT_END_LONG_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "ALERT_END_SHORT_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "RECOMMENDATION_SEVERITY_RANK",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "STATE_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "HEALTH_DESC",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "RECOMMENDATION_STATE"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

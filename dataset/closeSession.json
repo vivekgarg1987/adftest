@@ -1,0 +1,30 @@
+{
+	"name": "closeSession",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sessionId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			}
+		},
+		"folder": {
+			"name": "OrbcommDeviceCloud"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat('sensornet/RestfullServices/AuthService/closeSession?sessionId=',dataset().sessionId)",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

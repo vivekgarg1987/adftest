@@ -1,0 +1,16 @@
+{
+	"name": "SqlServer1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=10.67.187.10\\TIBS;initial catalog=TIBSParam;user id=shell",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjNTZiYzYzYi02MGZkLTQ0MzYtYWQ0Yi1mZDY5MWFhZGRiMTYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "integrationRuntime2Warmer",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

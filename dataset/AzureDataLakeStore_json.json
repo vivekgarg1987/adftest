@@ -1,0 +1,99 @@
+{
+	"name": "AzureDataLakeStore_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStoreGen1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sectorName": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			},
+			"componentId": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			},
+			"sourceType": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "Define on parent level"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"fileName": {
+					"value": "@concat('Id',dataset().componentId,'_From',formatDateTime(dataset().MyWindowStart, 'yyyy-MM-ddTHH.mm.ss'),'_To',formatDateTime(dataset().MyWindowEnd, 'yyyy-MM-ddTHH.mm.ss'),'.json')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('landingZone/',dataset().sectorName,'/Sensitive/TRN/',dataset().cId,'/',dataset().sourceType)",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"unitGuid": {
+					"type": "string"
+				},
+				"nextOffset": {
+					"type": "null"
+				},
+				"values": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"valueGuid": {
+								"type": "string"
+							},
+							"history": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"value": {
+											"type": "string"
+										},
+										"validTo": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"unit": {
+								"type": "string"
+							},
+							"decimalPlaces": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

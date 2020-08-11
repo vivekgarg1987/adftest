@@ -1,0 +1,28 @@
+{
+	"name": "Ortadogu_Trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "25551_CustomerLevelModular",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"cId": "25551",
+					"MyWindowInitialStart": "2020-01-25T00:00:00Z"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2019-12-05T14:43:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

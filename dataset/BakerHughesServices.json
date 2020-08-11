@@ -1,0 +1,69 @@
+{
+	"name": "BakerHughesServices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BakerHughesREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SOURCE_COMPONENT_ID": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"pageSize": {
+				"type": "string",
+				"defaultValue": "1"
+			},
+			"withTotalPages": {
+				"type": "string",
+				"defaultValue": "true"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"CUSTOMER_NAME": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"SOURCE_API_ID": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			},
+			"applicationToken": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			}
+		},
+		"folder": {
+			"name": "BakerHughes"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat(dataset().relativeURL,dataset().CUSTOMER_NAME,'/asset/',dataset().SOURCE_API_ID,'/systems/',dataset().SOURCE_COMPONENT_ID,'/sensordata?p=1','&startdate=',dataset().MyWindowStart,'&enddate=',dataset().MyWindowEnd)",
+				"type": "Expression"
+			},
+			"requestMethod": "GET",
+			"additionalHeaders": {
+				"Authorization": {
+					"value": "@concat('Bearer ',dataset().applicationToken)",
+					"type": "Expression"
+				}
+			},
+			"paginationRules": {
+				"AbsoluteUrl": "$.paging.next"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

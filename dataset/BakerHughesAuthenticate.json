@@ -1,0 +1,33 @@
+{
+	"name": "BakerHughesAuthenticate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BakerHughesAuthREST",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"client_Secret": {
+				"type": "string",
+				"defaultValue": "<pipeline value>"
+			}
+		},
+		"folder": {
+			"name": "BakerHughes"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "",
+			"requestMethod": "POST",
+			"additionalHeaders": {
+				"Authorization": {
+					"value": "@concat('Basic ',dataset().client_Secret)",
+					"type": "Expression"
+				},
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			"requestBody": "grant_type=client_credentials"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

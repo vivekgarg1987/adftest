@@ -1,0 +1,68 @@
+{
+	"name": "DEV_COMPONENT_PROPERTY_LIMIT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_loops_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DEV-SQL-Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "LIMIT_ID",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "COMPONENT_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "PROPERTY_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "UNIT_OF_MEASURE_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ALERT_LIMIT_QUANTITY",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "OPTIMAL_LIMIT_QUANTITY",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "APPLICATION_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "STANDARDISATION_MIN_QTY",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "STANDARDISATION_MAX_QTY",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "master_tables",
+			"table": "COMPONENT_PROPERTY_LIMIT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,160 @@
+{
+	"name": "testCompAp",
+	"properties": {
+		"activities": [
+			{
+				"name": "authenticate",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "POST",
+							"additionalHeaders": {
+								"value": "@{concat('Comap-Key: ',pipeline().parameters.ComapKey,'\nContent-Type: application/x-www-form-urlencoded')}",
+								"type": "Expression"
+							},
+							"requestBody": {
+								"value": "@{concat(pipeline().parameters.test1,pipeline().parameters.username,pipeline().parameters.test2,pipeline().parameters.password,pipeline().parameters.test3)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "ComApAuthenticateUser",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeURL": {
+								"value": "@pipeline().parameters.relativeURLauth",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "units",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "authenticate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET",
+							"additionalHeaders": {
+								"value": "@{concat('Comap-Key: ',pipeline().parameters.ComapKey,'\nToken: ',activity('authenticate').output.firstRow.applicationToken)}",
+								"type": "Expression"
+							},
+							"requestTimeout": ""
+						}
+					},
+					"dataset": {
+						"referenceName": "ComApAuthenticateUser",
+						"type": "DatasetReference",
+						"parameters": {
+							"relativeURL": {
+								"value": "@pipeline().parameters.relativeURLunits",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"username": {
+				"type": "string",
+				"defaultValue": "mark.raynes@shell.com"
+			},
+			"password": {
+				"type": "string",
+				"defaultValue": "CHAngeMe638541"
+			},
+			"ComapKey": {
+				"type": "string",
+				"defaultValue": "154fa81ecff441d88b99c6bd08598890"
+			},
+			"relativeURLauth": {
+				"type": "string",
+				"defaultValue": "authenticate"
+			},
+			"relativeURLunits": {
+				"type": "string",
+				"defaultValue": "units"
+			},
+			"unitGuid1": {
+				"type": "string",
+				"defaultValue": "gensete7385553d43d414aa194ad9382eb5527"
+			},
+			"unitGuid2": {
+				"type": "string",
+				"defaultValue": "genset132647d26a414c8c832b559ce58ddd0a"
+			},
+			"unitGuid3": {
+				"type": "string",
+				"defaultValue": "genset9a601bda004844b78752cf6411d1e88d"
+			},
+			"cId": {
+				"type": "string",
+				"defaultValue": "TEST"
+			},
+			"MyWindowInitialStart": {
+				"type": "string",
+				"defaultValue": "2020-03-18T00:00:00Z"
+			},
+			"test1": {
+				"type": "string",
+				"defaultValue": "{\"username\":\""
+			},
+			"test2": {
+				"type": "string",
+				"defaultValue": "\",\"password\":\""
+			},
+			"test3": {
+				"type": "string",
+				"defaultValue": "\" }"
+			},
+			"MyWindowStart": {
+				"type": "string",
+				"defaultValue": "2020-03-18T00:00:00Z"
+			},
+			"MyWindowEnd": {
+				"type": "string",
+				"defaultValue": "2020-03-19T00:00:00Z"
+			}
+		},
+		"folder": {
+			"name": "TESTs"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-03-20T09:06:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
